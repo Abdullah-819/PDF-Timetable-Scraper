@@ -1,4 +1,8 @@
-from core.normalizer import normalize_text
+from core.extractor import extract_pdf_lines
 
-sample = "F\neh\nm\n U\nl Q\nur\nan"
-print(normalize_text(sample))
+lines = extract_pdf_lines("data/timetable.pdf")
+
+print("Total lines:", len(lines))
+print("First 40 lines:")
+for l in lines[:40]:
+    print(l)
