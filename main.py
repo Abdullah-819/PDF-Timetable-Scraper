@@ -1,8 +1,22 @@
-from core.extractor import extract_pdf_lines
+import json
+from core.extractor import extract_pdf_tables
+from core.parser import parse_timetable
 
-lines = extract_pdf_lines("data/timetable.pdf")
 
-print("Total lines:", len(lines))
-print("First 40 lines:")
-for l in lines[:40]:
-    print(l)
+PDF_PATH = "data/timetable.pdf"
+
+
+def run(section_code: str):
+    tables = extract_pdf_tables(PDF_PATH)
+    timetable = parse_timetable(tables, section_code)
+
+    output = {
+        "section": section_code,
+        "days": timetable
+    }
+
+    print(json.dumps(output, indent=2))
+
+
+if __name__ == "__main__":
+    run("FA24-BCS-4-E")

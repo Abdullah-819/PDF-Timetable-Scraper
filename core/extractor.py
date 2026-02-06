@@ -1,17 +1,29 @@
 import pdfplumber
-from core.normalizer import normalize_text
 
 
-def extract_pdf_lines(pdf_path: str) -> list[str]:
-    all_lines = []
+def extract_pdf_tables(pdf_path: str) -> list[list[list[str]]]:
+    all_tables = []
 
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            text = page.extract_text()
-            if not text:
-                continue
+            tables = page.extract_tables({
+                "vertical_strategy": "lines",
+                "horizontal_strategy": "lines",
+                "intersection_tolerance": 5
+            })
 
-            normalized_lines = normalize_text(text)
-            all_lines.extend(normalized_lines)
+            for table in tables:
+                cleaned_table = []
+                for row in table:
+                    if not row:
+                        continue
+                    cleaned_row = [
+                        cell.strip().replace("\n", " ") if cell else ""
+                        for cell in row
+                    ]
+                    cleaned_table.append(cleaned_row)
 
-    return all_lines
+                if cleaned_table:
+                    all_tables.append(cleaned_table)
+
+    return all_tables
